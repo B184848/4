@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <!-- 關鍵設定：強制手機以 1:1 比例顯示，並防止輸入欄位時畫面放大 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- 曼妮美學專屬 Favicon (瀏覽器分頁圖示) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23C5A898%22/><text x=%2250%22 y=%2268%22 font-family=%22Arial%22 font-size=%2260%22 fill=%22white%22 text-anchor=%22middle%22 font-weight=%22bold%22>M</text></svg>">
+
+    <!-- 1. Google 搜尋引擎優化 (SEO) 核心設定 -->
+    <title>[雲林斗南．曼妮美學]❤️線上預約系統❤｜雲林美甲、美睫、按摩指壓油推推薦</title>
+    <meta name="description" content="[斗南 曼妮美學] 官方線上預約系統。提供雲林斗南最專業的美甲、美睫、身體按摩服務。精緻優雅的法式沙龍空間，專屬客製化美學設計，立即線上預約您的專屬時段！">
+    <meta name="keywords" content="曼妮美學, 斗南曼妮美學, 斗南美甲, 斗南美睫, 斗南按摩, 雲林美甲, 雲林美睫, 斗南指壓油推, 雲林美容沙龍, 曼妮美學預約">
+    <meta name="author" content="曼妮美學">
+    <meta name="robots" content="index, follow">
+
+    <!-- 2. 社群分享優化標籤 (Open Graph) -->
+    <meta property="og:title" content="[雲林斗南．曼妮美學] ❤️線上預約系統❤">
+    <meta property="og:description" content="雲林斗南極緻美學沙龍！提供美甲、美睫、精油油推與專業按摩服務。點擊立刻線上預約。">
+    <meta property="og:image" content="https://i.ibb.co/1J80BXL2/99091.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="曼妮美學">
+
+    <!-- 3. Google 在地商家結構標記 (Schema JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BeautySalon",
+      "name": "斗南曼妮美學",
+      "image": "https://i.ibb.co/1J80BXL2/99091.jpg",
+      "description": "雲林斗南頂級曼妮美學沙龍，提供專業美甲（週一至週六）、美睫（全年無休）、指壓乾壓與精油油推（全年無休）服務。專屬精緻預約制，為您打造極致的美學體驗。",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "斗南鎮",
+        "addressRegion": "雲林縣",
+        "postalCode": "630",
+        "addressCountry": "TW"
+      },
+      "openingHours": [
+        "Mo-Sa 10:00-21:00",
+        "Su 10:00-21:00"
+      ],
+      "telephone": "請透過官方LINE預約",
+      "priceRange": "$$"
+    }
+    </script>
+
+    <!-- Tailwind CSS & Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --color-milk-bg: #F9F6F0; --color-rose-gold: #C5A898; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: var(--color-milk-bg); color: #4A3E3D; -webkit-font-smoothing: antialiased; }
+        .selected-btn { border: 2px solid var(--color-rose-gold) !important; background-color: #EFE6E0 !important; }
+        
+        /* 隱藏滾動條但保持可滾動，讓畫面更簡潔 */
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="px-4 py-6 sm:py-10"> <!-- 在 body 加入 padding，讓手機版左右不貼邊 -->
+
+    <!-- 頂級美學設計：浮動通知訊息 (Toast) -->
+    <div id="toast-notification" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#4A3E3D] text-white px-6 py-3 rounded-2xl shadow-lg text-sm font-medium tracking-wide opacity-0 pointer-events-none transition-all duration-300 w-11/12 max-w-xs text-center">
+        提示訊息
+    </div>
+
+    <!-- 頂級美學設計：自訂確認彈跳視窗 (Confirm Modal) -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl border border-[#EFECE6] text-center transform scale-95 transition-all duration-300">
+            <h3 class="font-serif text-lg font-bold text-[#4A3E3D] mb-2" id="modal-title">確認操作</h3>
+            <p class="text-sm text-[#8A7E73] mb-6 whitespace-pre-line" id="modal-body">確認要執行此動作嗎？</p>
+            <div class="flex gap-3">
+                <button id="modal-cancel-btn" class="flex-1 py-3 border border-[#EDEAE4] rounded-xl text-sm font-medium text-[#8A7E73]">取消</button>
+                <button id="modal-confirm-btn" class="flex-1 py-3 bg-[#C5A898] hover:bg-[#B39686] text-white rounded-xl text-sm font-bold">確認</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頂級美學設計：預約須知說明 Modal -->
+    <div id="terms-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl border border-[#EFECE6] transform scale-95 transition-all duration-300">
+            <h3 class="font-serif text-lg font-bold text-[#4A3E3D] mb-3 text-center">預約服務須知</h3>
+            <div class="text-xs text-[#8A7E73] space-y-2 leading-relaxed max-h-60 overflow-y-auto mb-6 pr-1">
+                <p>1. <strong>確認時效</strong>：為維護雙方權益，預約完成後請點擊跳轉至官方 LINE 發送確認訊息，以便現場人員為您保留預訂。</p>
+                <p>2. <strong>取消與變更</strong>：如欲取消或改期，最遲請於預約時間 <span class="text-[#C5A898] font-bold">24 小時前</span>透過系統查詢頁面或 LINE 進行取消。</p>
+                <p>3. <strong>遲到說明</strong>：預約保留 10 分鐘，逾時將依現場狀況調整當日服務項目，或視同取消。</p>
+                <p>4. <strong>惡意洗單</strong>：若經查證使用虛假電話或無故未到累計達 2 次者，系統將限制後續預約美學服務權限。</p>
+            </div>
+            <button onclick="closeTermsModal()" class="w-full py-3 bg-[#C5A898] hover:bg-[#B39686] text-white rounded-xl text-sm font-bold transition-all cursor-pointer">我已充分了解</button>
+        </div>
+    </div>
+
+    <!-- 頂級美學設計：電腦版 LINE 預約引導 Modal -->
+    <div id="desktop-line-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl border border-[#EFECE6] text-center transform scale-95 transition-all duration-300">
+            <h3 class="font-serif text-lg font-bold text-[#4A3E3D] mb-1">🎉 預約成功！資料已寫入</h3>
+            <p class="text-xs text-[#8A7E73] mb-4 leading-relaxed">
+                由於您使用的是電腦版網頁，電腦版 LINE 不支援自動帶入文字。請點選下方按鈕複製預約資訊並手動貼上傳送：
+            </p>
+            <div class="bg-[#F9F6F0] p-4 rounded-2xl border border-[#EDEAE4] text-xs font-mono text-[#4A3E3D] whitespace-pre-line text-left leading-relaxed mb-4 max-h-48 overflow-y-auto" id="desktop-msg-preview">
+                預約資料載入中...
+            </div>
+            <div class="space-y-2">
+                <button id="desktop-copy-btn" onclick="copyDesktopMsg()" class="w-full py-3 bg-[#4A3E3D] hover:bg-[#3D3231] text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    📋 一鍵複製預約文字
+                </button>
+                <a id="desktop-line-link" href="https://line.me/R/ti/p/%40324lvoyy" target="_blank" class="w-full py-3 bg-[#C5A898] hover:bg-[#B39686] text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 text-center block cursor-pointer">
+                    💬 開啟官方 LINE 貼上送出
+                </a>
+                <p class="text-[10px] text-gray-400">貼心提醒：點擊上方按鈕開啟聊天室後，按 Ctrl+V (Mac按 Cmd+V) 貼上文字送出即可！</p>
+                <button onclick="closeDesktopModal()" class="w-full py-2.5 border border-[#EDEAE4] text-xs text-[#8A7E73] rounded-xl hover:bg-gray-50 transition-all font-medium cursor-pointer">
+                    直接關閉此引導視窗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要容器：調整為手機版 p-6，電腦版 p-8 -->
+    <main class="w-full max-w-md mx-auto bg-white rounded-3xl sm:rounded-[32px] shadow-sm border border-[#EFECE6] p-6 sm:p-8 relative">
+        
+        <div class="text-center mb-6">
+            <img src="https://i.ibb.co/1J80BXL2/99091.jpg" alt="曼妮美學 Logo" class="w-24 h-24 mx-auto mb-3 rounded-full object-cover shadow-sm border border-[#EFE6E0]">
+            <h1 class="font-serif text-2xl font-semibold tracking-widest text-[#4A3E3D]">雲林斗南 ． 曼妮美學</h1>
+        </div>
+
+        <div class="flex border-b border-[#F5F2EE] mb-6">
+            <button onclick="switchTab('booking')" id="tab-booking" class="flex-1 pb-3 text-sm font-bold border-b-2 border-[#C5A898] text-[#C5A898] transition-all cursor-pointer flex justify-center items-center gap-2">✨ 線上預約</button>
+            <button onclick="switchTab('query')" id="tab-query" class="flex-1 pb-3 text-sm font-medium border-b-2 border-transparent text-gray-400 transition-all cursor-pointer flex justify-center items-center gap-2">🔍 查詢/取消</button>
+        </div>
+
+        <!-- 區塊 A：線上預約分頁 -->
+        <div id="booking-section" class="space-y-6 relative">
+            
+            <div id="data-loading-overlay" class="absolute -inset-4 z-10 bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-start pt-24 transition-all duration-300 rounded-3xl">
+                <div class="w-10 h-10 border-4 border-[#EFE6E0] border-t-[#C5A898] rounded-full animate-spin mb-4 shadow-sm"></div>
+                <p class="text-xs font-bold text-[#C5A898] tracking-widest bg-white px-5 py-2.5 rounded-full shadow-sm border border-[#EFECE6]">正在連接同步中....</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-[#8A7E73] mb-4 uppercase tracking-widest">01 / 選擇服務項目</label>
+                <div id="service-grid" class="grid grid-cols-1 gap-3">
+                    <button onclick="selectService('美甲 💅🏻', this)" class="svc-btn w-full px-5 py-4 rounded-2xl border border-[#EDEAE4] text-left hover:border-[var(--color-rose-gold)] transition-all cursor-pointer">美甲 💅🏻</button>
+                    <button onclick="selectService('美睫 👁️', this)" class="svc-btn w-full px-5 py-4 rounded-2xl border border-[#EDEAE4] text-left hover:border-[var(--color-rose-gold)] transition-all cursor-pointer">美睫 👁️</button>
+                    <button onclick="selectService('按摩 🌿', this)" class="svc-btn w-full px-5 py-4 rounded-2xl border border-[#EDEAE4] text-left hover:border-[var(--color-rose-gold)] transition-all cursor-pointer">按摩 🌿</button>
+                </div>
+                
+                <div id="nail-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
+                    <p class="text-xs text-[#8A7E73] mb-3">選擇美甲指定師：</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="selectNailDesigner('兔兔', this)" class="nail-designer-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">指定師 兔兔</button>
+                        <button onclick="selectNailDesigner('綾綾', this)" class="nail-designer-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">指定師 綾綾</button>
+                    </div>
+                </div>
+
+                <div id="eyelash-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
+                    <p class="text-xs text-[#8A7E73] mb-3">選擇美睫服務：</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="selectEyelashType('完整嫁接', this)" class="eyelash-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">完整嫁接</button>
+                        <button onclick="selectEyelashType('補睫毛', this)" class="eyelash-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">補睫毛</button>
+                        <button onclick="selectEyelashType('卸睫毛', this)" class="eyelash-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">卸睫毛</button>
+                    </div>
+                </div>
+
+                <div id="massage-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
+                    <p class="text-xs text-[#8A7E73] mb-3">選擇按摩類型：</p>
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <button onclick="selectMassageType('指壓乾壓', this)" class="msg-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">指壓乾壓</button>
+                        <button onclick="selectMassageType('精油油推', this)" class="msg-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">精油油推</button>
+                    </div>
+
+                    <p class="text-xs text-[#8A7E73] mb-3">選擇按摩時長：</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="selectDuration('30分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">30分</button>
+                        <button onclick="selectDuration('60分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">60分</button>
+                        <button onclick="selectDuration('90分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">90分</button>
+                        <button onclick="selectDuration('120分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">120分</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-[#8A7E73] mb-4 uppercase tracking-widest">02 / 選擇日期與時間</label>
+                <div id="date-container" class="flex gap-2 overflow-x-auto pb-4 mb-2 opacity-50 pointer-events-none transition-all scroll-smooth" style="-webkit-overflow-scrolling: touch;"></div>
+                <div id="time-grid" class="grid grid-cols-3 gap-2"></div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-[#8A7E73] mb-3 uppercase tracking-widest">03 / 填寫基本資料</label>
+                <!-- 加入 text-base (16px) 防止 iOS 點擊輸入框時自動放大畫面 -->
+                <input type="text" id="cust-name" placeholder="您的姓名" class="w-full px-4 py-3 mb-2 rounded-xl border border-[#EDEAE4] focus:outline-[#C5A898] transition-all text-base">
+                <input type="tel" id="cust-phone" placeholder="您的手機號碼 (如:0912345678)" maxlength="10" class="w-full px-4 py-3 mb-3 rounded-xl border border-[#EDEAE4] focus:outline-[#C5A898] transition-all text-base">
+                
+                <div class="hidden" aria-hidden="true" style="display: none !important;">
+                    <input type="text" id="hp-email" tabindex="-1" autocomplete="off" placeholder="bot-trap-email">
+                </div>
+
+                <div class="flex items-start gap-2 text-xs text-[#8A7E73] mb-4 bg-[#FDFCFB] p-3 rounded-xl border border-[#F5F2EE]">
+                    <input type="checkbox" id="terms-agree" class="mt-0.5 rounded text-[#C5A898] border-[#EDEAE4] focus:ring-[#C5A898] cursor-pointer">
+                    <label for="terms-agree" class="cursor-pointer select-none leading-relaxed">
+                        我同意並遵守曼妮美學的 <span onclick="showTermsModal(event)" class="text-[#C5A898] font-bold underline">預約須知</span> (未按規定確認或無故缺席將列黑名單)
+                    </label>
+                </div>
+            </div>
+
+            <button id="submit-btn" onclick="submitReservation()" class="w-full bg-[#C5A898] hover:bg-[#B39686] text-white py-4 rounded-2xl font-bold transition-all shadow-xs cursor-pointer active:scale-95">確認預約</button>
+        </div>
+
+        <!-- 區塊 B：查詢與取消預約分頁 -->
+        <div id="query-section" class="hidden space-y-6">
+            <div class="bg-[#FDFCF9] rounded-2xl p-5 border border-[#EDEAE4] space-y-3">
+                <p class="text-xs font-bold text-[#8A7E73] mb-1 tracking-widest uppercase">請輸入您預約時留下的資料</p>
+                <input type="text" id="query-name" placeholder="預約姓名" class="w-full px-4 py-3 rounded-xl border border-[#EDEAE4] bg-white text-base focus:outline-[#C5A898]">
+                <input type="tel" id="query-phone" placeholder="預約手機號碼" maxlength="10" class="w-full px-4 py-3 rounded-xl border border-[#EDEAE4] bg-white text-base focus:outline-[#C5A898]">
+                <button onclick="queryAppointments()" class="w-full bg-[#4A3E3D] hover:bg-[#3D3231] text-white py-3 rounded-xl font-bold text-sm transition-all shadow-xs cursor-pointer active:scale-95">查詢預約紀錄</button>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-[#8A7E73] mb-3 uppercase tracking-widest">您的預約列表</label>
+                <div id="query-results" class="space-y-3">
+                    <p class="text-center text-xs py-8 text-gray-400 bg-gray-50 rounded-2xl border border-dashed border-[#EDEAE4]">請點選上方按鈕開始查詢</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full max-w-md mx-auto mt-6 mb-8 text-center text-xs text-[#8A7E73] space-y-1">
+        <p class="font-serif">Manny Aesthetics ． 曼妮美學</p>
+        <p>營業時間：週一至週六 10:00 - 21:00（週日僅提供美睫與按摩預約，美甲週日公休）</p>
+        <p>服務據點：雲林縣斗南鎮文元二街22號（詳細工作室地點請洽官方 LINE:@324lvoyy）</p>
+        <p class="text-[10px] text-gray-400 mt-4 pt-4 border-t border-[#EFECE6] w-1/2 mx-auto">© 2026 曼妮美學 版權所有</p>
+    </footer>
+
+    <script>
+        const GOOGLE_APP_URL = "https://script.google.com/macros/s/AKfycbyc32cm5ytO6LIELyVLCJk1WHsoLgLUP7hHr2oKdLYb33FEmrqVYJN8R2vEb22__1eFCA/exec";
+        let bookedData = {}; 
+        let selectedService = '', selectedMassageType = '', selectedDuration = '', selectedEyelashType = '', selectedNailDesigner = '', selectedDate = '', selectedTime = '', selectedDateText = '';
+        let pageLoadTime = 0;
+        let globalPendingMsg = "";
+
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast-notification');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, duration);
+        }
+
+        function showConfirm(title, body, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            const mTitle = document.getElementById('modal-title');
+            const mBody = document.getElementById('modal-body');
+            const confirmBtn = document.getElementById('modal-confirm-btn');
+            const cancelBtn = document.getElementById('modal-cancel-btn');
+
+            mTitle.innerText = title;
+            mBody.innerText = body;
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+            modal.querySelector('div').classList.add('scale-100');
+
+            const close = () => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modal.querySelector('div').classList.remove('scale-100');
+                modal.querySelector('div').classList.add('scale-95');
+            };
+
+            confirmBtn.onclick = () => { close(); onConfirm(); };
+            cancelBtn.onclick = close;
+        }
+
+        window.showTermsModal = function(event) {
+            if (event) event.stopPropagation();
+            const modal = document.getElementById('terms-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+            modal.querySelector('div').classList.add('scale-100');
+        }
+
+        window.closeTermsModal = function() {
+            const modal = document.getElementById('terms-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-100');
+            modal.querySelector('div').classList.add('scale-95');
+        }
+
+        window.showDesktopModal = function(msg) {
+            globalPendingMsg = msg;
+            document.getElementById('desktop-msg-preview').innerText = msg;
+            
+            const modal = document.getElementById('desktop-line-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+            modal.querySelector('div').classList.add('scale-100');
+        }
+
+        window.closeDesktopModal = function() {
+            const modal = document.getElementById('desktop-line-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-100');
+            modal.querySelector('div').classList.add('scale-95');
+            window.location.reload();
+        }
+
+        window.copyDesktopMsg = function() {
+            const el = document.createElement('textarea');
+            el.value = globalPendingMsg;
+            el.setAttribute('readonly', '');
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast("📋 預約內容已成功複製！請至聊天室貼上。");
+                    const copyBtn = document.getElementById('desktop-copy-btn');
+                    copyBtn.innerText = "✅ 複製成功！";
+                    copyBtn.classList.remove('bg-[#4A3E3D]');
+                    copyBtn.classList.add('bg-green-600');
+                    setTimeout(() => {
+                        copyBtn.innerText = "📋 一鍵複製預約文字";
+                        copyBtn.classList.remove('bg-green-600');
+                        copyBtn.classList.add('bg-[#4A3E3D]');
+                    }, 2000);
+                } else {
+                    showToast("複製失敗，請手動選取文字複製。");
+                }
+            } catch (err) {
+                showToast("複製失敗，請手動選取文字複製。");
+            }
+            document.body.removeChild(el);
+        };
+
+        function formatPhoneForSheet(phone) {
+            let cleaned = phone.trim();
+            if (cleaned.startsWith('09') && cleaned.length === 10) {
+                return cleaned.substring(1);
+            }
+            return cleaned;
+        }
+
+        async function fetchAppointments() {
+            const overlay = document.getElementById('data-loading-overlay');
+            if (overlay) overlay.classList.remove('opacity-0', 'pointer-events-none');
+            
+            try {
+                const response = await fetch(GOOGLE_APP_URL + '?action=read&t=' + new Date().getTime());
+                bookedData = await response.json(); 
+            } catch (error) {
+                showToast("資料連線稍慢，請稍候再試或重新整理網頁");
+            } finally {
+                if (overlay) overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        window.switchTab = function(tabName) {
+            const tabBooking = document.getElementById('tab-booking');
+            const tabQuery = document.getElementById('tab-query');
+            const bookingSec = document.getElementById('booking-section');
+            const querySec = document.getElementById('query-section');
+
+            if (tabName === 'booking') {
+                tabBooking.className = "flex-1 pb-3 text-sm font-bold border-b-2 border-[#C5A898] text-[#C5A898] transition-all cursor-pointer flex justify-center items-center gap-2";
+                tabQuery.className = "flex-1 pb-3 text-sm font-medium border-b-2 border-transparent text-gray-400 transition-all cursor-pointer flex justify-center items-center gap-2";
+                bookingSec.classList.remove('hidden');
+                querySec.classList.add('hidden');
+                if (selectedDate) renderTimeGrid(selectedDate);
+            } else {
+                tabBooking.className = "flex-1 pb-3 text-sm font-medium border-b-2 border-transparent text-gray-400 transition-all cursor-pointer flex justify-center items-center gap-2";
+                tabQuery.className = "flex-1 pb-3 text-sm font-bold border-b-2 border-[#C5A898] text-[#C5A898] transition-all cursor-pointer flex justify-center items-center gap-2";
+                bookingSec.classList.add('hidden');
+                querySec.classList.remove('hidden');
+            }
+        };
+
+        window.selectService = function(name, btn) {
+            selectedService = name;
+            document.querySelectorAll('.svc-btn').forEach(b => b.classList.remove('selected-btn'));
+            btn.classList.add('selected-btn');
+            
+            const isNail = (name === '美甲 💅🏻');
+            const isMassage = (name === '按摩 🌿');
+            const isEyelash = (name === '美睫 👁️');
+            
+            document.getElementById('nail-sub-container').classList.toggle('hidden', !isNail);
+            document.getElementById('massage-sub-container').classList.toggle('hidden', !isMassage);
+            document.getElementById('eyelash-sub-container').classList.toggle('hidden', !isEyelash);
+            
+            if (!isNail) { selectedNailDesigner = ''; document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); }
+            if (!isMassage) { selectedMassageType = ''; selectedDuration = ''; document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('selected-btn')); }
+            if (!isEyelash) { selectedEyelashType = ''; document.querySelectorAll('.eyelash-type-btn').forEach(b => b.classList.remove('selected-btn')); }
+
+            if (isNail && selectedDate) {
+                const selD = new Date(selectedDate);
+                if (selD.getDay() === 0) { 
+                    selectedDate = ''; selectedDateText = '';
+                    document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected-btn'));
+                    showToast('💅🏻 美甲服務週日公休，已為您重置日期，請重新選擇！');
+                }
+            }
+
+            if (typeof updateDateButtonsAvailability === 'function') updateDateButtonsAvailability();
+            const dateContainer = document.getElementById('date-container');
+            dateContainer.classList.remove('opacity-50', 'pointer-events-none');
+            
+            if (selectedDate) renderTimeGrid(selectedDate);
+            else {
+                const timeGrid = document.getElementById('time-grid');
+                timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">← 請先點選上方的預約日期</div>';
+            }
+        };
+
+        window.selectNailDesigner = function(designer, btn) { selectedNailDesigner = designer; document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); if (selectedDate) renderTimeGrid(selectedDate); };
+        window.selectEyelashType = function(type, btn) { selectedEyelashType = type; document.querySelectorAll('.eyelash-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); if (selectedDate) renderTimeGrid(selectedDate); };
+        window.selectMassageType = function(type, btn) { selectedMassageType = type; document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); if (selectedDate) renderTimeGrid(selectedDate); };
+        window.selectDuration = function(dur, btn) { selectedDuration = dur; document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); if (selectedDate) renderTimeGrid(selectedDate); };
+
+        function getServiceDuration(serviceName) {
+            if (serviceName.includes("美甲")) return 180;
+            if (serviceName.includes("美睫")) return 120;
+            if (serviceName.includes("按摩")) {
+                if (!selectedDuration) return 60;
+                const match = selectedDuration.match(/(\d+)/);
+                return match ? parseInt(match[1], 10) : 60;
+            }
+            return 60;
+        }
+
+        function getBookedServiceDuration(serviceName) {
+            if (!serviceName) return 60;
+            if (serviceName.includes("美甲")) return 180;
+            if (serviceName.includes("美睫")) return 120;
+            if (serviceName.includes("按摩")) {
+                const match = serviceName.match(/(\d+)\s*分/);
+                return match ? parseInt(match[1], 10) : 60;
+            }
+            return 60;
+        }
+
+        function timeToMinutes(timeStr) { const parts = timeStr.split(':'); return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10); }
+
+        function renderTimeGrid(dateStr) {
+            const timeGrid = document.getElementById('time-grid');
+            timeGrid.innerHTML = '';
+            if (!selectedService) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請先在步驟 01 選擇項目</div>'; return; }
+            
+            const isNail = (selectedService === '美甲 💅🏻');
+            if (isNail) {
+                const selD = new Date(dateStr);
+                if (selD.getDay() === 0) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-red-400">💅🏻 美甲服務週日公休，請選擇其他日期</div>'; return; }
+                if (!selectedNailDesigner) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請先選擇美甲指定師</div>'; return; }
+            }
+
+            const isMassage = (selectedService === '按摩 🌿');
+            if (isMassage) {
+                if (!selectedMassageType) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請先選擇按摩類型</div>'; return; }
+                if (!selectedDuration) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請先選擇按摩時長</div>'; return; }
+            }
+
+            const isEyelash = (selectedService === '美睫 👁️');
+            if (isEyelash && !selectedEyelashType) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請先選擇美睫服務種類</div>'; return; }
+
+            const busySlots = bookedData[dateStr] || []; 
+            const currentDuration = getServiceDuration(selectedService); 
+            const isCurrentNail = selectedService.includes("美甲");
+            const isCurrentEyelashOrMassage = selectedService.includes("美睫") || selectedService.includes("按摩");
+            let timeSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+            let closingTime = isMassage ? 1320 : 1260;
+
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+            timeSlots.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = "py-2.5 rounded-xl border border-[#EDEAE4] text-sm transition-all duration-200 cursor-pointer hover:border-[var(--color-rose-gold)]";
+                btn.innerText = t;
+                const slotStart = timeToMinutes(t);
+                const proposedEnd = slotStart + currentDuration;
+                let isBooked = false;
+
+                if (dateStr === todayStr && slotStart <= (now.getHours() * 60 + now.getMinutes())) isBooked = true;
+                if (!isBooked && proposedEnd > closingTime) isBooked = true;
+
+                if (!isBooked && selectedService) {
+                    isBooked = busySlots.some(slot => {
+                        const slotService = slot.service || "";
+                        if (isCurrentNail && slotService.includes("美甲")) {
+                            const designerConflict = (selectedNailDesigner === "兔兔" && slotService.includes("兔兔")) || (selectedNailDesigner === "綾綾" && slotService.includes("綾綾")) || (!slotService.includes("兔兔") && !slotService.includes("綾綾"));
+                            if (designerConflict) {
+                                const bookedStart = timeToMinutes(slot.time);
+                                return (slotStart < (bookedStart + getBookedServiceDuration(slotService)) && proposedEnd > bookedStart);
+                            }
+                        }
+                        if (isCurrentEyelashOrMassage && (slotService.includes("美睫") || slotService.includes("按摩"))) {
+                            const bookedStart = timeToMinutes(slot.time);
+                            return (slotStart < (bookedStart + getBookedServiceDuration(slotService)) && proposedEnd > bookedStart);
+                        }
+                        return false;
+                    });
+                }
+
+                if (isBooked) { btn.className = "py-2.5 rounded-xl border border-gray-100 bg-gray-100 text-gray-400 cursor-not-allowed line-through text-sm"; btn.disabled = true; }
+                else {
+                    if (selectedTime === t) btn.classList.add('selected-btn');
+                    btn.onclick = function() { selectedTime = t; timeGrid.querySelectorAll('button').forEach(b => b.classList.remove('selected-btn')); this.classList.add('selected-btn'); };
+                }
+                timeGrid.appendChild(btn);
+            });
+        }
+
+        window.queryAppointments = async function() {
+            const name = document.getElementById('query-name').value.trim();
+            const phone = document.getElementById('query-phone').value.trim();
+            if (!name || !phone) { showToast("請填寫完整的姓名與手機！"); return; }
+            if (!/^09\d{8}$/.test(phone)) { showToast("請輸入正確的 10 碼手機號碼"); return; }
+            const resultsContainer = document.getElementById('query-results');
+            resultsContainer.innerHTML = '<p class="text-center text-xs py-8 text-[#C5A898] animate-pulse">預約紀錄查詢中...</p>';
+            try {
+                const response = await fetch(`${GOOGLE_APP_URL}?action=query&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(formatPhoneForSheet(phone))}&t=${new Date().getTime()}`);
+                const appointments = await response.json();
+                resultsContainer.innerHTML = '';
+                if (!appointments || appointments.length === 0) { resultsContainer.innerHTML = '<p class="text-center text-xs py-8 text-gray-400 bg-gray-50 rounded-2xl border border-dashed border-[#EDEAE4]">查無此紀錄</p>'; return; }
+                appointments.sort((a, b) => new Date(a.date) - new Date(b.date));
+                appointments.forEach(appt => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-2xl p-4 border border-[#EDEAE4] flex justify-between items-center hover:border-[#C5A898] transition-all gap-2";
+                    card.innerHTML = `<div class="space-y-1 flex-1 pr-1"><span class="inline-block bg-[#F9F6F0] text-[#8A7E73] text-[10px] px-2 py-0.5 rounded-full font-bold">${appt.service}</span><div class="text-sm font-bold text-[#4A3E3D]">${appt.date.split('-')[1]}/${appt.date.split('-')[2]}（週${'日一二三四五六'[new Date(appt.date).getDay()]}）${appt.time}</div></div><button onclick="cancelReservation(${appt.rowIndex}, '${appt.date}', '${appt.time}', '${appt.service}', '${name}', '${phone}')" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer">取消</button>`;
+                    resultsContainer.appendChild(card);
+                });
+            } catch (error) { resultsContainer.innerHTML = '<p class="text-center text-xs py-8 text-red-400">系統繁忙中，請稍後再試</p>'; }
+        };
+
+        window.cancelReservation = function(rowIndex, dateStr, timeStr, serviceName, name, phone) {
+            showConfirm("確認取消預約嗎？", `項目：${serviceName}\n時間：${dateStr.split('-')[1]}/${dateStr.split('-')[2]} ${timeStr}`, async () => {
+                try {
+                    await fetch(GOOGLE_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'cancel', rowIndex: rowIndex, name: name, phone: formatPhoneForSheet(phone) }) });
+                    showToast("預約已順利取消！");
+                    await fetchAppointments();
+                    await queryAppointments();
+                } catch (error) { showToast("系統連線異常，請稍後再試"); }
+            });
+        };
+
+        window.submitReservation = async function() {
+            if (document.getElementById('hp-email').value) { showToast("系統連線繁忙，請重新整理網頁再試"); return; }
+            if (Date.now() - pageLoadTime < 4000) { showToast("填表速度過快，請稍等再試..."); return; }
+            if (!document.getElementById('terms-agree').checked) { showToast("請先閱讀並勾選同意『預約須知』！"); return; }
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            if(!selectedService || !selectedDate || !selectedTime || !name || !phone) { showToast('請完整選擇項目、日期、時間並填寫姓名電話！'); return; }
+            if (!/^09\d{8}$/.test(phone)) { showToast('請填寫正確的手機號碼！'); return; }
+            const isNail = (selectedService === '美甲 💅🏻');
+            const isMassage = (selectedService === '按摩 🌿');
+            const isEyelash = (selectedService === '美睫 👁️');
+            if (isNail && !selectedNailDesigner) { showToast('請選擇美甲指定師'); return; }
+            if (isMassage && (!selectedMassageType || !selectedDuration)) { showToast('請選擇按摩類型與時長'); return; }
+            if (isEyelash && !selectedEyelashType) { showToast('請選擇美睫服務項目'); return; }
+            
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "預約傳送中..."; btn.disabled = true;
+            let fullService = selectedService;
+            if (isNail) fullService = `${selectedService} (指定:${selectedNailDesigner})`;
+            else if (isMassage) fullService = `${selectedService} (${selectedMassageType} - ${selectedDuration})`;
+            else if (isEyelash) fullService = `${selectedService} (${selectedEyelashType})`;
+
+            try {
+                await fetch(GOOGLE_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'write', date: selectedDate, time: selectedTime, name: name, phone: formatPhoneForSheet(phone), service: fullService }) });
+                localStorage.setItem('last_booking_timestamp', Date.now().toString());
+                const msg = `【預約申請】\n項目:${fullService}\n日期:${selectedDateText}\n時間:${selectedTime}\n姓名:${name}\n電話:${phone}`;
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) window.location.href = `https://line.me/R/oaMessage/%40324lvoyy/?${encodeURIComponent(msg)}`;
+                else showDesktopModal(msg);
+            } catch(e) { showToast("預約連線異常，請稍後再試"); } finally { btn.innerText = "確認預約"; btn.disabled = false; }
+        };
+
+        window.updateDateButtonsAvailability = function() {
+            const isNail = (selectedService === '美甲 💅🏻');
+            document.querySelectorAll('.date-btn').forEach(btn => {
+                const dow = parseInt(btn.dataset.dow, 10);
+                if (isNail && dow === 0) { btn.classList.add('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.classList.remove('selected-btn'); btn.disabled = true; }
+                else { btn.classList.remove('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.disabled = false; if (selectedDate === btn.dataset.date) btn.classList.add('selected-btn'); }
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            pageLoadTime = Date.now();
+            await fetchAppointments(); 
+            const container = document.getElementById('date-container');
+            const timeGrid = document.getElementById('time-grid');
+            timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請先在步驟 01 選擇項目</div>';
+            for(let i=0; i<30; i++) {
+                const d = new Date(); d.setDate(d.getDate() + i);
+                const yyyy = d.getFullYear(); const mm = String(d.getMonth() + 1).padStart(2, '0'); const dd = String(d.getDate()).padStart(2, '0');
+                const dateStr = `${yyyy}-${mm}-${dd}`;
+                const btn = document.createElement('button');
+                btn.className = "date-btn shrink-0 w-16 py-3 rounded-xl border border-[#EDEAE4] text-center transition-all duration-200 cursor-pointer hover:border-[var(--color-rose-gold)]";
+                btn.dataset.date = dateStr; btn.dataset.dow = d.getDay();
+                btn.innerHTML = `<span class="block text-[9px] text-gray-400">${i===0?'今天':'週'+'日一二三四五六'[d.getDay()]}</span><span class="text-sm font-bold">${mm}/${dd}</span>`;
+                btn.onclick = function() { selectedDate = dateStr; selectedDateText = `${mm}/${dd}`; container.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected-btn')); this.classList.add('selected-btn'); renderTimeGrid(dateStr); };
+                container.appendChild(btn);
+            }
+            updateDateButtonsAvailability();
+        });
+    </script>
+</body>
+</html>
