@@ -154,7 +154,15 @@
                         <button onclick="selectNailDesigner('綾綾', this)" class="nail-designer-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer">指定師 綾綾</button>
                     </div>
 
-                    <!-- 綾綾專屬手足部位子選單（新增手足同做選項） -->
+                    <!-- 兔兔專屬部位子選單 -->
+                    <div id="tutu-sub-container" class="hidden mt-3 pt-3 border-t border-dashed border-[#F5F2EE]">
+                        <p class="text-xs text-[#8A7E73] mb-2.5">選擇施作部位：</p>
+                        <div class="grid grid-cols-1">
+                            <button onclick="selectNailPart('手部美甲', this)" class="nail-part-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">手部美甲 🖐️</button>
+                        </div>
+                    </div>
+
+                    <!-- 綾綾專屬手足部位子選單 -->
                     <div id="lingling-sub-container" class="hidden mt-3 pt-3 border-t border-dashed border-[#F5F2EE]">
                         <p class="text-xs text-[#8A7E73] mb-2.5">選擇施作部位：</p>
                         <div class="grid grid-cols-3 gap-2">
@@ -420,6 +428,7 @@
                 document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); 
                 document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn'));
                 document.getElementById('lingling-sub-container').classList.add('hidden');
+                document.getElementById('tutu-sub-container').classList.add('hidden');
             }
             if (!isMassage) { selectedMassageType = ''; selectedDuration = ''; document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('selected-btn')); }
             if (!isEyelash) { selectedEyelashType = ''; document.querySelectorAll('.eyelash-type-btn').forEach(b => b.classList.remove('selected-btn')); }
@@ -444,23 +453,26 @@
             }
         };
 
+        // 選擇美甲指定師（聯動展開各自部位選單）
         window.selectNailDesigner = function(designer, btn) { 
             selectedNailDesigner = designer; 
             document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); 
             btn.classList.add('selected-btn'); 
             
             const isLingling = (designer === '綾綾');
-            document.getElementById('lingling-sub-container').classList.toggle('hidden', !isLingling);
+            const isTutu = (designer === '兔兔');
             
-            // 如果切換回兔兔，重設並隱藏手足部位選單
-            if (!isLingling) {
-                selectedNailPart = '';
-                document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn'));
-            }
+            document.getElementById('lingling-sub-container').classList.toggle('hidden', !isLingling);
+            document.getElementById('tutu-sub-container').classList.toggle('hidden', !isTutu);
+            
+            // 重置選定的施作部位與選取樣式
+            selectedNailPart = '';
+            document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn'));
 
             if (selectedDate) renderTimeGrid(selectedDate); 
         };
 
+        // 選擇美甲施作部位
         window.selectNailPart = function(part, btn) {
             selectedNailPart = part;
             document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn'));
@@ -472,11 +484,12 @@
         window.selectMassageType = function(type, btn) { selectedMassageType = type; document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); if (selectedDate) renderTimeGrid(selectedDate); };
         window.selectDuration = function(dur, btn) { selectedDuration = dur; document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); if (selectedDate) renderTimeGrid(selectedDate); };
 
+        // 時長排程阻擋邏輯：計算本次服務所需時間
         function getServiceDuration(serviceName) {
             if (serviceName.includes("美甲")) {
-                // 如果是綾綾且選擇手+足一起施作，時長增加為 4 小時 (240分鐘)
+                // 如果是綾綾且選擇手+足一起施作，時長增加為 5 小時 (300分鐘)
                 if (selectedNailDesigner === '綾綾' && selectedNailPart === '手+足一起') {
-                    return 240;
+                    return 300;
                 }
                 return 180; // 預設美甲時長為 3 小時 (180分鐘)
             }
@@ -489,12 +502,13 @@
             return 60;
         }
 
+        // 解析後台試算表中已預約之項目時長
         function getBookedServiceDuration(serviceName) {
             if (!serviceName) return 60;
             if (serviceName.includes("美甲")) {
-                // 相容比對已寫入試算表中的手足一起時長 (4小時)
+                // 相容比對已寫入試算表中的手足一起時長 (5小時)
                 if (serviceName.includes("手+足一起")) {
-                    return 240;
+                    return 300;
                 }
                 return 180;
             }
@@ -508,6 +522,7 @@
 
         function timeToMinutes(timeStr) { const parts = timeStr.split(':'); return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10); }
 
+        // 渲染預約時間格與設計師分流判定
         function renderTimeGrid(dateStr) {
             const timeGrid = document.getElementById('time-grid');
             timeGrid.innerHTML = '';
@@ -518,7 +533,7 @@
                 const selD = new Date(dateStr);
                 if (selD.getDay() === 0) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-red-400">💅🏻 美甲服務週日公休，請選擇其他日期</div>'; return; }
                 if (!selectedNailDesigner) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請先選擇美甲指定師</div>'; return; }
-                if (selectedNailDesigner === '綾綾' && !selectedNailPart) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請選擇施作部位</div>'; return; }
+                if (!selectedNailPart) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-gray-400">請選擇施作部位</div>'; return; }
             }
 
             const isMassage = (selectedService === '按摩 🌿');
@@ -559,7 +574,7 @@
                 if (!isBooked && selectedService) {
                     isBooked = busySlots.some(slot => {
                         const slotService = slot.service || "";
-                        // 美甲組獨立判定 (分流比對美甲師)
+                        // 美甲組獨立判定 (分流比對美甲師兔兔與綾綾)
                         if (isCurrentNail && slotService.includes("美甲")) {
                             const designerConflict = (selectedNailDesigner === "兔兔" && slotService.includes("兔兔")) || (selectedNailDesigner === "綾綾" && slotService.includes("綾綾")) || (!slotService.includes("兔兔") && !slotService.includes("綾綾"));
                             if (designerConflict) {
@@ -585,6 +600,7 @@
             });
         }
 
+        // 查詢預約功能
         window.queryAppointments = async function() {
             const name = document.getElementById('query-name').value.trim();
             const phone = document.getElementById('query-phone').value.trim();
@@ -619,6 +635,7 @@
             });
         };
 
+        // 確認並提交預約
         window.submitReservation = async function() {
             if (document.getElementById('hp-email').value) { showToast("系統連線繁忙，請重新整理網頁再試"); return; }
             if (Date.now() - pageLoadTime < 4000) { showToast("填表速度過快，請稍等再試..."); return; }
@@ -632,7 +649,7 @@
             const isEyelash = (selectedService === '美睫 👁️');
             if (isNail) {
                 if (!selectedNailDesigner) { showToast('請選擇美甲指定師'); return; }
-                if (selectedNailDesigner === '綾綾' && !selectedNailPart) { showToast('請選擇施作部位（手部 / 足部 / 手+足一起）'); return; }
+                if (!selectedNailPart) { showToast('請選擇施作部位'); return; }
             }
             if (isMassage && (!selectedMassageType || !selectedDuration)) { showToast('請選擇按摩類型與時長'); return; }
             if (isEyelash && !selectedEyelashType) { showToast('請選擇美睫服務項目'); return; }
@@ -640,14 +657,10 @@
             const btn = document.getElementById('submit-btn');
             btn.innerText = "預約傳送中..."; btn.disabled = true;
             
-            // 組合完整服務項目字串，包含指定的施作部位
+            // 組合完整服務項目字串，包含設計師與指定的部位
             let fullService = selectedService;
             if (isNail) {
-                if (selectedNailDesigner === '綾綾') {
-                    fullService = `${selectedService} (指定:${selectedNailDesigner} - ${selectedNailPart})`;
-                } else {
-                    fullService = `${selectedService} (指定:${selectedNailDesigner})`;
-                }
+                fullService = `${selectedService} (指定:${selectedNailDesigner} - ${selectedNailPart})`;
             }
             else if (isMassage) fullService = `${selectedService} (${selectedMassageType} - ${selectedDuration})`;
             else if (isEyelash) fullService = `${selectedService} (${selectedEyelashType})`;
@@ -671,6 +684,7 @@
             });
         };
 
+        // 頁面初始化
         document.addEventListener('DOMContentLoaded', async () => {
             pageLoadTime = Date.now();
             await fetchAppointments(); 
