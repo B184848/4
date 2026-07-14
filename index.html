@@ -7,7 +7,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23C5A898%22/><text x=%2250%22 y=%2268%22 font-family=%22Arial%22 font-size=%2260%22 fill=%22white%22 text-anchor=%22middle%22 font-weight=%22bold%22>M</text></svg>">
 
     <title>曼妮美學｜線上預約｜雲林美甲、美睫、按摩指壓油推推薦</title>
-    <meta name="description" content="斗南 曼妮美學｜線上預約。提供雲林斗南最專業的美甲、美睫、身體按摩服務。精緻優雅的法式沙龍空間，專屬客製化美學設計，立即線上預約您的專屬時段！">
+    <meta name="description" content="斗南．曼妮美學｜官方線上預約。提供雲林斗南最專業的美甲、美睫、身體按摩服務。精緻優雅的法式沙龍空間，專屬客製化美學設計，立即線上預約您的專屬時段！">
     <meta name="keywords" content="曼妮美學, 斗南曼妮美學, 斗南美甲, 斗南美睫, 斗南按摩, 雲林美甲, 雲林美睫, 斗南指壓油推, 雲林美容沙龍, 曼妮美學預約">
     <meta name="author" content="曼妮美學">
     <meta name="robots" content="index, follow">
@@ -19,7 +19,7 @@
     <meta property="og:site_name" content="曼妮美學">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root { --color-milk-bg: #F9F6F0; --color-rose-gold: #C5A898; }
@@ -227,6 +227,7 @@
         let pageLoadTime = 0;
         let globalPendingMsg = "";
 
+        // 平滑滾動功能
         function scrollToElement(id) {
             setTimeout(() => {
                 const el = document.getElementById(id);
@@ -288,6 +289,7 @@
             document.getElementById('preview-service').innerText = fullService; document.getElementById('preview-date').innerText = formattedDate; document.getElementById('preview-time').innerText = selectedTime; container.classList.remove('hidden');
         }
 
+        // 判斷步驟 1 是否已完整選擇
         function checkStep1Complete() {
             if (!selectedService) return false;
             if (selectedService === '美甲 💅🏻') return !!(selectedNailDesigner && selectedNailPart);
@@ -296,7 +298,9 @@
             return false;
         }
 
+        // 統籌所有的動態提示
         function updateHints() {
+            // 先隱藏全部提示
             const hintIds = ['hint-service', 'hint-designer', 'hint-part-tutu', 'hint-part-lingling', 'hint-eyelash', 'hint-msg-type', 'hint-msg-dur', 'hint-date', 'hint-time'];
             hintIds.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
 
@@ -311,6 +315,7 @@
             else if (selectedService === '按摩 🌿' && !selectedDuration) { document.getElementById('hint-msg-dur').classList.remove('hidden'); } 
             else if (!selectedDate) { document.getElementById('hint-date').classList.remove('hidden'); } 
             else if (!selectedTime) {
+                // 檢查是否是美甲碰到星期日 (無效狀態則不顯示時間提示)
                 let isConflict = false;
                 if (selectedService === '美甲 💅🏻' && selectedDate) {
                     const selD = new Date(selectedDate);
@@ -321,7 +326,7 @@
         }
 
         window.selectService = function(name, btn) {
-            selectedService = name; selectedTime = ''; 
+            selectedService = name; selectedTime = ''; // 重置時間
             document.querySelectorAll('.svc-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn');
             
             const isNail = (name === '美甲 💅🏻'); const isMassage = (name === '按摩 🌿'); const isEyelash = (name === '美睫 👁️');
@@ -335,38 +340,14 @@
             if (typeof updateDateButtonsAvailability === 'function') updateDateButtonsAvailability();
             document.getElementById('date-container').classList.remove('opacity-50', 'pointer-events-none');
             renderTimeGrid(); updateConfirmPreview(); updateHints(); 
-            
-            if (isNail) scrollToElement('nail-sub-container');
-            if (isEyelash) scrollToElement('eyelash-sub-container');
-            if (isMassage) scrollToElement('massage-sub-container');
         };
 
-        window.selectNailDesigner = function(designer, btn) { 
-            selectedNailDesigner = designer; selectedTime = ''; 
-            document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); 
-            btn.classList.add('selected-btn'); 
-            document.getElementById('lingling-sub-container').classList.toggle('hidden', designer !== '綾綾'); 
-            document.getElementById('tutu-sub-container').classList.toggle('hidden', designer !== '兔兔'); 
-            selectedNailPart = ''; 
-            document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); 
-            renderTimeGrid(); updateConfirmPreview(); updateHints(); 
-            
-            // 修正：點指定師只滾動到對應的部位選單，不跳到日期
-            if (designer === '兔兔') scrollToElement('tutu-sub-container');
-            if (designer === '綾綾') scrollToElement('lingling-sub-container');
-        };
+        window.selectNailDesigner = function(designer, btn) { selectedNailDesigner = designer; selectedTime = ''; document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); document.getElementById('lingling-sub-container').classList.toggle('hidden', designer !== '綾綾'); document.getElementById('tutu-sub-container').classList.toggle('hidden', designer !== '兔兔'); selectedNailPart = ''; document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
         
+        // 選擇部位/類型/時間後自動滾動到「日期」
         window.selectNailPart = function(part, btn) { selectedNailPart = part; selectedTime = ''; document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); if(checkStep1Complete()) scrollToElement('step2-label'); };
         window.selectEyelashType = function(type, btn) { selectedEyelashType = type; selectedTime = ''; document.querySelectorAll('.eyelash-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); if(checkStep1Complete()) scrollToElement('step2-label'); };
-        
-        window.selectMassageType = function(type, btn) { 
-            selectedMassageType = type; selectedTime = ''; 
-            document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); 
-            btn.classList.add('selected-btn'); 
-            renderTimeGrid(); updateConfirmPreview(); updateHints(); 
-            scrollToElement('hint-msg-dur'); 
-        };
-        
+        window.selectMassageType = function(type, btn) { selectedMassageType = type; selectedTime = ''; document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
         window.selectDuration = function(dur, btn) { selectedDuration = dur; selectedTime = ''; document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); if(checkStep1Complete()) scrollToElement('step2-label'); };
 
         function getServiceDuration(serviceName) {
@@ -393,7 +374,7 @@
             const step1Complete = checkStep1Complete();
             
             if (!step1Complete) { 
-                timeGrid.innerHTML = ''; 
+                timeGrid.innerHTML = ''; // 移除原先的灰色提示
                 updateHints(); return; 
             }
 
@@ -451,12 +432,12 @@
                         this.classList.add('selected-btn'); 
                         updateConfirmPreview(); 
                         updateHints(); 
-                        scrollToElement('step4-label'); 
+                        scrollToElement('step4-label'); // 選好時間自動滾到輸入資料
                     };
                 }
                 timeGrid.appendChild(btn);
             });
-            updateHints(); 
+            updateHints(); // 確保重新繪製後狀態正確
         }
 
         window.queryAppointments = async function() {
@@ -525,7 +506,7 @@
             await fetchAppointments(); 
             const container = document.getElementById('date-container');
             const timeGrid = document.getElementById('time-grid');
-            timeGrid.innerHTML = ''; 
+            timeGrid.innerHTML = ''; // 初始移除灰色文字
             
             for(let i=0; i<30; i++) {
                 const d = new Date(); d.setDate(d.getDate() + i);
@@ -542,12 +523,12 @@
                     renderTimeGrid(); 
                     updateConfirmPreview(); 
                     updateHints(); 
-                    scrollToElement('step3-label'); 
+                    scrollToElement('step3-label'); // 選好日期自動滾到時段
                 };
                 container.appendChild(btn);
             }
             updateDateButtonsAvailability();
-            updateHints(); 
+            updateHints(); // 初始載入顯示第一個提示
         });
     </script>
 </body>
