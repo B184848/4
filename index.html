@@ -101,7 +101,9 @@
                     <button onclick="selectService('美睫 👁️', this)" class="svc-btn w-full px-5 py-4 rounded-2xl border border-[#EDEAE4] text-left hover:border-[var(--color-rose-gold)] transition-all cursor-pointer">美睫 👁️</button>
                     <button onclick="selectService('按摩 🌿', this)" class="svc-btn w-full px-5 py-4 rounded-2xl border border-[#EDEAE4] text-left hover:border-[var(--color-rose-gold)] transition-all cursor-pointer">按摩 🌿</button>
                 </div>
-                <div id="hint-service" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇上方的服務項目</div>
+                
+                <!-- 明顯的動態提示：服務項目 -->
+                <div id="hint-service" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇上方的服務項目</div>
                 
                 <div id="nail-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
                     <p class="text-xs text-[#8A7E73] mb-3">選擇美甲指定師：</p>
@@ -109,14 +111,18 @@
                         <button onclick="selectNailDesigner('兔兔', this)" class="nail-designer-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">指定師 兔兔</button>
                         <button onclick="selectNailDesigner('綾綾', this)" class="nail-designer-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">指定師 綾綾</button>
                     </div>
-                    <div id="hint-designer" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇美甲指定師</div>
+                    
+                    <!-- 明顯的動態提示：美甲設計師 -->
+                    <div id="hint-designer" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇美甲指定師</div>
 
                     <div id="tutu-sub-container" class="hidden mt-3 pt-3 border-t border-dashed border-[#F5F2EE]">
                         <p class="text-xs text-[#8A7E73] mb-2.5">選擇施作部位：</p>
                         <div class="grid grid-cols-1">
                             <button onclick="selectNailPart('手部美甲', this)" class="nail-part-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">手部美甲 🖐️</button>
                         </div>
-                        <div id="hint-part-tutu" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇施作部位</div>
+                        
+                        <!-- 明顯的動態提示：部位 (兔兔) -->
+                        <div id="hint-part-tutu" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇施作部位</div>
                     </div>
 
                     <div id="lingling-sub-container" class="hidden mt-3 pt-3 border-t border-dashed border-[#F5F2EE]">
@@ -126,7 +132,9 @@
                             <button onclick="selectNailPart('足部', this)" class="nail-part-btn py-2 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">足部 🦶</button>
                             <button onclick="selectNailPart('手+足一起', this)" class="nail-part-btn py-2 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">手+足一起 🖐️🦶</button>
                         </div>
-                        <div id="hint-part-lingling" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇施作部位</div>
+                        
+                        <!-- 明顯的動態提示：部位 (綾綾) -->
+                        <div id="hint-part-lingling" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇施作部位</div>
                     </div>
                 </div>
 
@@ -137,7 +145,8 @@
                         <button onclick="selectEyelashType('補睫毛', this)" class="eyelash-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">補睫毛</button>
                         <button onclick="selectEyelashType('卸睫毛', this)" class="eyelash-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">卸睫毛</button>
                     </div>
-                    <div id="hint-eyelash" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇美睫服務項目</div>
+                    <!-- 明顯的動態提示：美睫 -->
+                    <div id="hint-eyelash" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇美睫服務項目</div>
                 </div>
 
                 <div id="massage-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
@@ -146,23 +155,26 @@
                         <button onclick="selectMassageType('指壓乾壓', this)" class="msg-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">指壓乾壓</button>
                         <button onclick="selectMassageType('精油油推', this)" class="msg-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">精油油推</button>
                     </div>
-                    <div id="hint-msg-type" class="hidden text-center text-xs pb-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇按摩類型</div>
+                    <!-- 明顯的動態提示：按摩類型 -->
+                    <div id="hint-msg-type" class="hidden text-center text-xs mt-4 mb-2 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇按摩類型</div>
 
-                    <p class="text-xs text-[#8A7E73] mt-2 mb-3">選擇按摩時長：</p>
+                    <p class="text-xs text-[#8A7E73] mt-4 mb-3 border-t border-dashed border-[#F5F2EE] pt-4">選擇按摩時長：</p>
                     <div class="grid grid-cols-4 gap-2">
                         <button onclick="selectDuration('30分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">30分</button>
                         <button onclick="selectDuration('60分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">60分</button>
                         <button onclick="selectDuration('90分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">90分</button>
                         <button onclick="selectDuration('120分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">120分</button>
                     </div>
-                    <div id="hint-msg-dur" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇按摩時長</div>
+                    <!-- 明顯的動態提示：按摩時長 -->
+                    <div id="hint-msg-dur" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇按摩時長</div>
                 </div>
             </div>
 
-            <div class="mb-6">
+            <div class="mb-6 pt-4">
                 <label id="step2-label" class="block text-xs font-bold text-[#8A7E73] mb-4 uppercase tracking-widest">02 / 選擇日期</label>
                 <div id="date-container" class="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-[240px] overflow-y-auto pr-1 pb-1 opacity-50 pointer-events-none transition-all"></div>
-                <div id="hint-date" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先點選上方的預約日期</div>
+                <!-- 明顯的動態提示：日期 -->
+                <div id="hint-date" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 點選上方的預約日期</div>
             </div>
 
             <div>
@@ -174,7 +186,8 @@
                     </div>
                 </div>
                 <div id="time-grid" class="grid grid-cols-3 gap-2"></div>
-                <div id="hint-time" class="hidden text-center text-xs pt-3 font-medium tracking-wide text-[#C5A898] animate-pulse">↑ 請先選擇預約時段</div>
+                <!-- 明顯的動態提示：時段 -->
+                <div id="hint-time" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇預約時段</div>
             </div>
 
             <div id="confirm-preview-container" class="hidden mt-6 mb-2">
