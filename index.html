@@ -282,7 +282,6 @@
             document.getElementById('preview-service').innerText = fullService; document.getElementById('preview-date').innerText = formattedDate; document.getElementById('preview-time').innerText = selectedTime; container.classList.remove('hidden');
         }
 
-        // 判斷步驟 1 是否已完整選擇
         function checkStep1Complete() {
             if (!selectedService) return false;
             if (selectedService === '美甲 💅🏻') return !!(selectedNailDesigner && selectedNailPart);
@@ -291,9 +290,7 @@
             return false;
         }
 
-        // 統籌所有的動態提示
         function updateHints() {
-            // 先隱藏全部提示
             const hintIds = ['hint-service', 'hint-designer', 'hint-part-tutu', 'hint-part-lingling', 'hint-eyelash', 'hint-msg-type', 'hint-msg-dur', 'hint-date', 'hint-time'];
             hintIds.forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('hidden'); });
 
@@ -308,7 +305,6 @@
             else if (selectedService === '按摩 🌿' && !selectedDuration) { document.getElementById('hint-msg-dur').classList.remove('hidden'); } 
             else if (!selectedDate) { document.getElementById('hint-date').classList.remove('hidden'); } 
             else if (!selectedTime) {
-                // 檢查是否是美甲碰到星期日 (無效狀態則不顯示時間提示)
                 let isConflict = false;
                 if (selectedService === '美甲 💅🏻' && selectedDate) {
                     const selD = new Date(selectedDate);
@@ -319,7 +315,7 @@
         }
 
         window.selectService = function(name, btn) {
-            selectedService = name; selectedTime = ''; // 重置時間
+            selectedService = name; selectedTime = '';
             document.querySelectorAll('.svc-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn');
             
             const isNail = (name === '美甲 💅🏻'); const isMassage = (name === '按摩 🌿'); const isEyelash = (name === '美睫 👁️');
@@ -336,7 +332,6 @@
         };
 
         window.selectNailDesigner = function(designer, btn) { selectedNailDesigner = designer; selectedTime = ''; document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); document.getElementById('lingling-sub-container').classList.toggle('hidden', designer !== '綾綾'); document.getElementById('tutu-sub-container').classList.toggle('hidden', designer !== '兔兔'); selectedNailPart = ''; document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
-        
         window.selectNailPart = function(part, btn) { selectedNailPart = part; selectedTime = ''; document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
         window.selectEyelashType = function(type, btn) { selectedEyelashType = type; selectedTime = ''; document.querySelectorAll('.eyelash-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
         window.selectMassageType = function(type, btn) { selectedMassageType = type; selectedTime = ''; document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
@@ -364,9 +359,8 @@
             timeGrid.innerHTML = '';
             
             const step1Complete = checkStep1Complete();
-            
             if (!step1Complete) { 
-                timeGrid.innerHTML = ''; // 移除原先的灰色提示
+                timeGrid.innerHTML = '';
                 updateHints(); return; 
             }
 
@@ -428,7 +422,7 @@
                 }
                 timeGrid.appendChild(btn);
             });
-            updateHints(); // 確保重新繪製後狀態正確
+            updateHints();
         }
 
         window.queryAppointments = async function() {
@@ -448,35 +442,71 @@
             } catch (error) { resultsContainer.innerHTML = '<p class="text-center text-xs py-8 text-red-400">系統繁忙中，請稍後再試</p>'; }
         };
 
+        // 輔助函式：異步取得使用者真實 IP (具備備份防故障機制)
+        async function getClientIp() {
+            let ip = "Unknown";
+            try {
+                const res = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(3000) });
+                const data = await res.json();
+                ip = data.ip;
+            } catch (e) {
+                console.log("ipify 獲取失敗，改用備份 seeip 來源...", e);
+                try {
+                    const res2 = await fetch('https://ip.seeip.org/jsonip', { signal: AbortSignal.timeout(3000) });
+                    const data2 = await res2.json();
+                    ip = data2.ip;
+                } catch (e2) {
+                    console.log("備份來源也獲取失敗");
+                }
+            }
+            return ip;
+        }
+
         window.cancelReservation = function(rowIndex, dateStr, timeStr, serviceName, name, phone) {
             showConfirm("確認取消預約嗎？", `項目：${serviceName}\n時間：${dateStr.split('-')[1]}/${dateStr.split('-')[2]} ${timeStr}`, async () => {
-                
-                // 獲取 IP 以供黑名單驗證
-                let userIp = "Unknown";
-                try {
-                    const ipRes = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipRes.json();
-                    userIp = ipData.ip;
-                } catch(e) { console.log("無法獲取 IP"); }
-                
-                const finalUrl = GOOGLE_APP_URL + "?ip=" + userIp;
+                const userIp = await getClientIp();
+                const finalUrl = GOOGLE_APP_URL + "?ip=" + encodeURIComponent(userIp);
 
                 try { 
-                    await fetch(finalUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'cancel', rowIndex: rowIndex, name: name, phone: formatPhoneForSheet(phone) }) }); 
-                    showToast("預約已順利取消！"); 
-                    await fetchAppointments(); 
-                    await queryAppointments(); 
-                } catch (error) { showToast("系統連線異常，請稍後再試"); }
+                    const response = await fetch(finalUrl, { 
+                        method: 'POST', 
+                        body: JSON.stringify({ action: 'cancel', rowIndex: rowIndex, name: name, phone: formatPhoneForSheet(phone) }) 
+                    }); 
+                    
+                    const resData = await response.json();
+                    if (resData.success) {
+                        showToast("預約已順利取消！"); 
+                        await fetchAppointments(); 
+                        await queryAppointments(); 
+                    } else {
+                        showToast("取消失敗：" + (resData.error || "身分驗證失敗，無法取消"));
+                    }
+                } catch (error) { 
+                    showToast("系統連線異常，請稍後再試"); 
+                }
             });
         };
 
         window.submitReservation = async function() {
             if (document.getElementById('hp-email').value) { showToast("系統連線繁忙，請重新整理網頁再試"); return; }
+            
+            // ==========================================
+            // 🚨 1. 3 分鐘冷卻時間安全防護機制 (180000 毫秒)
+            // ==========================================
+            const lastBookingTime = localStorage.getItem('last_booking_timestamp');
+            if (lastBookingTime && (Date.now() - parseInt(lastBookingTime, 10)) < 180000) {
+                const leftSeconds = Math.ceil((180000 - (Date.now() - parseInt(lastBookingTime, 10))) / 1000);
+                showToast(`⏳ 系統冷卻中：請等待 ${leftSeconds} 秒後再發送新預約！`);
+                return;
+            }
+            // ==========================================
+
             if (Date.now() - pageLoadTime < 4000) { showToast("填表速度過快，請稍等再試..."); return; }
             if (!document.getElementById('terms-agree').checked) { showToast("請先閱讀並勾選同意『預約須知』！"); return; }
             const name = document.getElementById('cust-name').value.trim(); const phone = document.getElementById('cust-phone').value.trim();
             if(!selectedService || !selectedDate || !selectedTime || !name || !phone) { showToast('請完整選擇項目、日期、時間並填寫姓名電話！'); return; }
             if (!/^09\d{8}$/.test(phone)) { showToast('請填寫正確的手機號碼！'); return; }
+            
             const isNail = (selectedService === '美甲 💅🏻'); const isMassage = (selectedService === '按摩 🌿'); const isEyelash = (selectedService === '美睫 👁️');
             if (isNail) { if (!selectedNailDesigner) { showToast('請選擇美甲指定師'); return; } if (!selectedNailPart) { showToast('請選擇施作部位'); return; } }
             if (isMassage && (!selectedMassageType || !selectedDuration)) { showToast('請選擇按摩類型與時長'); return; }
@@ -489,24 +519,58 @@
             else if (isMassage) fullService = `${selectedService} (${selectedMassageType} - ${selectedDuration})`;
             else if (isEyelash) fullService = `${selectedService} (${selectedEyelashType})`;
 
-            // 獲取 IP 以供黑名單驗證
-            let userIp = "Unknown";
-            try {
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                userIp = ipData.ip;
-            } catch(e) { console.log("無法獲取 IP"); }
+            // 獲取客戶真實 IP
+            const userIp = await getClientIp();
             
-            // 將 IP 附加至發送網址
-            const finalUrl = GOOGLE_APP_URL + "?ip=" + userIp;
+            // 將 IP 以網址參數形式傳遞給後端 Web App 進行比對
+            const finalUrl = GOOGLE_APP_URL + "?ip=" + encodeURIComponent(userIp);
 
             try {
-                await fetch(finalUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'write', date: selectedDate, time: selectedTime, name: name, phone: formatPhoneForSheet(phone), service: fullService }) });
-                localStorage.setItem('last_booking_timestamp', Date.now().toString());
-                const msg = `【預約申請】\n項目:${fullService}\n日期:${selectedDateText}\n時間:${selectedTime}\n姓名:${name}\n電話:${phone}`;
-                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) window.location.href = `https://line.me/R/oaMessage/%40324lvoyy/?${encodeURIComponent(msg)}`;
-                else showDesktopModal(msg);
-            } catch(e) { showToast("預約連線異常，請稍後再試"); } finally { btn.innerText = "確認預約"; btn.disabled = false; }
+                // ⚠️ 移除 mode: 'no-cors'，允許讀取後端實際的回傳 JSON 結果
+                const response = await fetch(finalUrl, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: 'write', 
+                        date: selectedDate, 
+                        time: selectedTime, 
+                        name: name, 
+                        phone: formatPhoneForSheet(phone), 
+                        service: fullService 
+                    }) 
+                });
+                
+                const result = await response.json();
+                
+                // 判斷後端檢查黑名單後的結果
+                if (result.success) {
+                    // 寫入冷卻時間戳記
+                    localStorage.setItem('last_booking_timestamp', Date.now().toString());
+                    
+                    const msg = `【預約申請】\n項目:${fullService}\n日期:${selectedDateText}\n時間:${selectedTime}\n姓名:${name}\n電話:${phone}`;
+                    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                        window.location.href = `https://line.me/R/oaMessage/%40324lvoyy/?${encodeURIComponent(msg)}`;
+                    } else {
+                        showDesktopModal(msg);
+                    }
+                } else {
+                    // ==========================================
+                    // 🚨 2. 精準反應：黑名單阻擋 UI 提示
+                    // ==========================================
+                    if (result.error === "Access Denied") {
+                        showToast("🚫 預約失敗：您的來源 IP 已被系統限制存取！");
+                    } else if (result.error === "Cooldown active") {
+                        showToast("⏳ 預約失敗：系統檢測到您 3 分鐘內已有發送過預約，請稍候。");
+                    } else {
+                        showToast("預約失敗：" + (result.error || "伺服器忙碌中"));
+                    }
+                }
+            } catch(e) { 
+                console.error(e);
+                showToast("預約連線異常，請稍後再試"); 
+            } finally { 
+                btn.innerText = "確認預約"; 
+                btn.disabled = false; 
+            }
         };
 
         window.updateDateButtonsAvailability = function() {
@@ -523,7 +587,7 @@
             await fetchAppointments(); 
             const container = document.getElementById('date-container');
             const timeGrid = document.getElementById('time-grid');
-            timeGrid.innerHTML = ''; // 初始移除灰色文字
+            timeGrid.innerHTML = '';
             
             for(let i=0; i<30; i++) {
                 const d = new Date(); d.setDate(d.getDate() + i);
@@ -544,7 +608,7 @@
                 container.appendChild(btn);
             }
             updateDateButtonsAvailability();
-            updateHints(); // 初始載入顯示第一個提示
+            updateHints();
         });
     </script>
 </body>
