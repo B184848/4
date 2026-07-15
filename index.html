@@ -91,7 +91,7 @@
         <div id="booking-section" class="space-y-6 relative">
             <div id="data-loading-overlay" class="absolute -inset-4 z-10 bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-start pt-24 transition-all duration-300 rounded-3xl">
                 <div class="w-10 h-10 border-4 border-[#EFE6E0] border-t-[#C5A898] rounded-full animate-spin mb-4 shadow-sm"></div>
-                <p class="text-xs font-bold text-[#C5A898] tracking-widest bg-white px-5 py-2.5 rounded-full shadow-sm border border-[#EFECE6]">正在連接同步中....</p>
+                <p class="text-xs font-bold text-[#C5A898] tracking-widest bg-white px-5 py-2.5 rounded-full shadow-sm border border-[#EFECE6]">正在讀取連接中....</p>
             </div>
 
             <div>
@@ -557,7 +557,7 @@
                     // 🚨 2. 精準反應：黑名單阻擋 UI 提示
                     // ==========================================
                     if (result.error === "Access Denied") {
-                        showToast("🚫 預約失敗：您的來源 IP 已被系統限制存取！");
+                        showToast("🚫 預約失敗：請聯繫官方LINE客服！");
                     } else if (result.error === "Cooldown active") {
                         showToast("⏳ 預約失敗：系統檢測到您 3 分鐘內已有發送過預約，請稍候。");
                     } else {
