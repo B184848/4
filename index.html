@@ -177,6 +177,7 @@
                         <div class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 rounded-[4px] bg-[#E5E0DA] border border-[#E5E0DA]"></div><span>已預約</span></div>
                     </div>
                 </div>
+                <!-- 時段顯示區塊：已更新為 10:00, 10:30 等半小時區間 -->
                 <div id="time-grid" class="grid grid-cols-3 gap-2"></div>
                 <div id="hint-time" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇預約時段</div>
             </div>
@@ -386,7 +387,14 @@
             const currentDuration = getServiceDuration(selectedService); 
             const isCurrentNail = selectedService.includes("美甲");
             const isCurrentEyelashOrMassage = selectedService.includes("美睫") || selectedService.includes("按摩");
-            let timeSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
+            
+            // 這裡已經更新為包含 30 分鐘間隔的陣列
+            let timeSlots = [
+                '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', 
+                '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', 
+                '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', 
+                '19:00', '19:30', '20:00'
+            ];
             
             let closingTime = isCurrentEyelashOrMassage ? 1320 : 1260;
             const now = new Date();
