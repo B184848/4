@@ -177,7 +177,6 @@
                         <div class="flex items-center gap-1.5"><div class="w-3.5 h-3.5 rounded-[4px] bg-[#E5E0DA] border border-[#E5E0DA]"></div><span>已預約</span></div>
                     </div>
                 </div>
-                <!-- 時段顯示區塊：已更新為 10:00, 10:30 等半小時區間 -->
                 <div id="time-grid" class="grid grid-cols-3 gap-2"></div>
                 <div id="hint-time" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇預約時段</div>
             </div>
@@ -225,7 +224,7 @@
         <!-- 營業時間：拆分為主資訊與括號說明 -->
         <div class="space-y-0.5">
             <p class="font-medium">營業時間：週一至週六 10:00 - 21:00</p>
-            <p class="text-[11px] text-[#bf9077] font-bold tracking-wide">（週日僅提供美睫與按摩預約，美甲週日公休）</p>
+            <p class="text-[11px] text-[#bf9077] font-bold tracking-wide">（週日僅提供按摩預約，美甲與美睫週日公休）</p>
         </div>
         
         <!-- 服務據點：將實體地址與 LINE 聯絡分拆成獨立兩行，達到完美置中對齊 -->
@@ -318,7 +317,7 @@
             else if (!selectedDate) { document.getElementById('hint-date').classList.remove('hidden'); } 
             else if (!selectedTime) {
                 let isConflict = false;
-                if (selectedService === '美甲 💅🏻' && selectedDate) {
+                if ((selectedService === '美甲 💅🏻' || selectedService === '美睫 👁️') && selectedDate) {
                     const selD = new Date(selectedDate);
                     if (selD.getDay() === 0) isConflict = true;
                 }
@@ -337,7 +336,15 @@
             if (!isMassage) { selectedMassageType = ''; selectedDuration = ''; document.querySelectorAll('.msg-type-btn, .dur-btn').forEach(b => b.classList.remove('selected-btn')); }
             if (!isEyelash) { selectedEyelashType = ''; document.querySelectorAll('.eyelash-type-btn').forEach(b => b.classList.remove('selected-btn')); }
 
-            if (isNail && selectedDate) { const selD = new Date(selectedDate); if (selD.getDay() === 0) { selectedDate = ''; selectedDateText = ''; document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected-btn')); showToast('💅🏻 美甲服務週日公休，已為您重置日期，請重新選擇！'); } }
+            if ((isNail || isEyelash) && selectedDate) { 
+                const selD = new Date(selectedDate); 
+                if (selD.getDay() === 0) { 
+                    selectedDate = ''; selectedDateText = ''; 
+                    document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected-btn')); 
+                    const msg = isNail ? '💅🏻 美甲服務週日公休，已為您重置日期，請重新選擇！' : '👁️ 美睫服務週日公休，已為您重置日期，請重新選擇！';
+                    showToast(msg); 
+                } 
+            }
             if (typeof updateDateButtonsAvailability === 'function') updateDateButtonsAvailability();
             document.getElementById('date-container').classList.remove('opacity-50', 'pointer-events-none');
             renderTimeGrid(); updateConfirmPreview(); updateHints(); 
@@ -378,23 +385,22 @@
 
             const dateStr = selectedDate;
             const isNail = (selectedService === '美甲 💅🏻');
-            if (isNail) {
+            const isEyelashForTimeGrid = (selectedService === '美睫 👁️');
+            
+            if (isNail || isEyelashForTimeGrid) {
                 const selD = new Date(dateStr);
-                if (selD.getDay() === 0) { timeGrid.innerHTML = '<div class="col-span-3 text-center text-xs py-4 text-red-400">💅🏻 美甲服務週日公休，請選擇其他日期</div>'; updateHints(); return; }
+                if (selD.getDay() === 0) { 
+                    const msg = isNail ? '💅🏻 美甲服務週日公休，請選擇其他日期' : '👁️ 美睫服務週日公休，請選擇其他日期';
+                    timeGrid.innerHTML = `<div class="col-span-3 text-center text-xs py-4 text-red-400">${msg}</div>`; 
+                    updateHints(); return; 
+                }
             }
 
             const busySlots = bookedData[dateStr] || []; 
             const currentDuration = getServiceDuration(selectedService); 
             const isCurrentNail = selectedService.includes("美甲");
             const isCurrentEyelashOrMassage = selectedService.includes("美睫") || selectedService.includes("按摩");
-            
-            // 這裡已經更新為包含 30 分鐘間隔的陣列
-            let timeSlots = [
-                '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', 
-                '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', 
-                '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', 
-                '19:00', '19:30', '20:00'
-            ];
+            let timeSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
             
             let closingTime = isCurrentEyelashOrMassage ? 1320 : 1260;
             const now = new Date();
@@ -594,9 +600,10 @@
 
         window.updateDateButtonsAvailability = function() {
             const isNail = (selectedService === '美甲 💅🏻');
+            const isEyelash = (selectedService === '美睫 👁️');
             document.querySelectorAll('.date-btn').forEach(btn => {
                 const dow = parseInt(btn.dataset.dow, 10);
-                if (isNail && dow === 0) { btn.classList.add('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.classList.remove('selected-btn'); btn.disabled = true; }
+                if ((isNail || isEyelash) && dow === 0) { btn.classList.add('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.classList.remove('selected-btn'); btn.disabled = true; }
                 else { btn.classList.remove('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.disabled = false; if (selectedDate === btn.dataset.date) btn.classList.add('selected-btn'); }
             });
         };
