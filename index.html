@@ -237,7 +237,12 @@
     </footer>
 
     <script>
-        const GOOGLE_APP_URL = "https://script.google.com/macros/s/AKfycbw8ZyWbLFZSns_aiPsjFJxV1AmE6GM6rR05bHujlVNbK24WR5G2SAsD3NvCSlvaHG7ujg/exec";
+        // 雙分流 Google Apps Script 伺服器網址（主要與備用）
+        const GOOGLE_APP_URLS = [
+            "https://script.google.com/macros/s/AKfycbw8ZyWbLFZSns_aiPsjFJxV1AmE6GM6rR05bHujlVNbK24WR5G2SAsD3NvCSlvaHG7ujg/exec",
+            "https://script.google.com/macros/s/AKfycbxBqoeHRm4ojenMLZG8fXSxuQ_y7BVcv7AzVLZ48pWaKb4cOuUmlDUACtrAsc3Uf2Ra/exec"
+        ];
+
         let bookedData = {}; 
         let selectedService = '', selectedMassageType = '', selectedDuration = '', selectedEyelashType = '', selectedNailDesigner = '', selectedNailPart = '', selectedDate = '', selectedTime = '', selectedDateText = '';
         let pageLoadTime = 0;
