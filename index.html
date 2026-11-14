@@ -36,8 +36,10 @@
 </head>
 <body class="p-4 sm:p-6 min-h-screen flex flex-col justify-between">
 
+    <!-- 浮動通知訊息 (Toast) -->
     <div id="toast-notification" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#4A3E3D] text-white px-6 py-3 rounded-2xl shadow-lg text-sm font-medium tracking-wide opacity-0 pointer-events-none transition-all duration-300 w-11/12 max-w-xs text-center">提示訊息</div>
 
+    <!-- 自訂確認彈跳視窗 (Confirm Modal) -->
     <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl border border-[#EFECE6] text-center transform scale-95 transition-all duration-300">
             <h3 class="font-serif text-lg font-bold text-[#4A3E3D] mb-2" id="modal-title">確認操作</h3>
@@ -49,6 +51,7 @@
         </div>
     </div>
 
+    <!-- 預約須知說明 Modal -->
     <div id="terms-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl border border-[#EFECE6] transform scale-95 transition-all duration-300">
             <h3 class="font-serif text-lg font-bold text-[#4A3E3D] mb-3 text-center">預約服務須知</h3>
@@ -62,6 +65,7 @@
         </div>
     </div>
 
+    <!-- 電腦版 LINE 預約引導 Modal -->
     <div id="desktop-line-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-xl border border-[#EFECE6] text-center transform scale-95 transition-all duration-300">
             <h3 class="font-serif text-lg font-bold text-[#4A3E3D] mb-1">🎉 預約成功！資料已寫入</h3>
@@ -76,21 +80,21 @@
         </div>
     </div>
 
+    <!-- 主要容器 -->
     <main class="w-full max-w-md mx-auto bg-white rounded-3xl sm:rounded-[32px] shadow-sm border border-[#EFECE6] p-6 sm:p-8 relative">
         <div class="text-center mb-6">
             <img src="https://i.ibb.co/1J80BXL2/99091.jpg" alt="曼妮美學 Logo" class="w-24 h-24 mx-auto mb-3 rounded-full object-cover shadow-sm border border-[#EFE6E0]">
             <h1 class="font-serif text-2xl font-semibold tracking-widest text-[#4A3E3D]">雲林斗南 ． 曼妮美學</h1>
         </div>
 
+        <!-- 導覽分頁 -->
         <div class="flex border-b border-[#F5F2EE] mb-6">
             <button onclick="switchTab('booking')" id="tab-booking" class="flex-1 pb-3 text-xs sm:text-sm font-bold border-b-2 border-[#C5A898] text-[#C5A898] transition-all cursor-pointer flex justify-center items-center gap-1">✨ 線上預約</button>
-
             <button onclick="switchTab('prices')" id="tab-prices" class="flex-1 pb-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-400 transition-all cursor-pointer flex justify-center items-center gap-1">📋 價目表</button>
-
             <button onclick="switchTab('query')" id="tab-query" class="flex-1 pb-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-400 transition-all cursor-pointer flex justify-center items-center gap-1">🔍 查詢/取消</button>
-
         </div>
 
+        <!-- 區塊 A：線上預約 -->
         <div id="booking-section" class="space-y-6 relative">
             <div id="data-loading-overlay" class="absolute -inset-4 z-10 bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-start pt-24 transition-all duration-300 rounded-3xl">
                 <div class="w-10 h-10 border-4 border-[#EFE6E0] border-t-[#C5A898] rounded-full animate-spin mb-4 shadow-sm"></div>
@@ -105,8 +109,9 @@
                     <button onclick="selectService('按摩 🌿', this)" class="svc-btn w-full px-5 py-4 rounded-2xl border border-[#EDEAE4] text-left hover:border-[var(--color-rose-gold)] transition-all cursor-pointer">按摩 🌿</button>
                 </div>
                 
-                <div id="hint-service" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇上方的服務項目</div>
+                <div id="hint-service" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇上方的服務項目</div>
                 
+                <!-- 美甲子選單 -->
                 <div id="nail-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
                     <p class="text-xs text-[#8A7E73] mb-3">選擇美甲指定師：</p>
                     <div class="grid grid-cols-2 gap-2">
@@ -114,15 +119,14 @@
                         <button onclick="selectNailDesigner('綾綾', this)" class="nail-designer-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">指定師 綾綾</button>
                     </div>
                     
-                    <div id="hint-designer" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇美甲指定師</div>
+                    <div id="hint-designer" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇美甲指定師</div>
 
                     <div id="tutu-sub-container" class="hidden mt-3 pt-3 border-t border-dashed border-[#F5F2EE]">
                         <p class="text-xs text-[#8A7E73] mb-2.5">選擇施作部位：</p>
                         <div class="grid grid-cols-1">
                             <button onclick="selectNailPart('手部美甲', this)" class="nail-part-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">手部美甲 🖐️</button>
                         </div>
-                        
-                        <div id="hint-part-tutu" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇施作部位</div>
+                        <div id="hint-part-tutu" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇施作部位</div>
                     </div>
 
                     <div id="lingling-sub-container" class="hidden mt-3 pt-3 border-t border-dashed border-[#F5F2EE]">
@@ -132,11 +136,11 @@
                             <button onclick="selectNailPart('足部', this)" class="nail-part-btn py-2 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">足部 🦶</button>
                             <button onclick="selectNailPart('手+足一起', this)" class="nail-part-btn py-2 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">手+足一起 🖐️🦶</button>
                         </div>
-                        
-                        <div id="hint-part-lingling" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇施作部位</div>
+                        <div id="hint-part-lingling" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇施作部位</div>
                     </div>
                 </div>
 
+                <!-- 美睫子選單 -->
                 <div id="eyelash-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
                     <p class="text-xs text-[#8A7E73] mb-3">選擇美睫服務：</p>
                     <div class="grid grid-cols-3 gap-2">
@@ -144,16 +148,17 @@
                         <button onclick="selectEyelashType('補睫毛', this)" class="eyelash-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">補睫毛</button>
                         <button onclick="selectEyelashType('卸睫毛', this)" class="eyelash-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">卸睫毛</button>
                     </div>
-                    <div id="hint-eyelash" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇美睫服務項目</div>
+                    <div id="hint-eyelash" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇美睫服務項目</div>
                 </div>
 
+                <!-- 按摩子選單 -->
                 <div id="massage-sub-container" class="hidden mt-4 pt-4 border-t border-[#F5F2EE]">
                     <p class="text-xs text-[#8A7E73] mb-3">選擇按摩類型：</p>
                     <div class="grid grid-cols-2 gap-2 mb-2">
                         <button onclick="selectMassageType('指壓乾壓', this)" class="msg-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">指壓乾壓</button>
                         <button onclick="selectMassageType('精油油推', this)" class="msg-type-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">精油油推</button>
                     </div>
-                    <div id="hint-msg-type" class="hidden text-center text-xs mt-4 mb-2 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇按摩類型</div>
+                    <div id="hint-msg-type" class="hidden text-center text-sm mt-4 mb-2 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇按摩類型</div>
 
                     <p class="text-xs text-[#8A7E73] mt-4 mb-3 border-t border-dashed border-[#F5F2EE] pt-4">選擇按摩時長：</p>
                     <div class="grid grid-cols-4 gap-2">
@@ -162,14 +167,14 @@
                         <button onclick="selectDuration('90分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">90分</button>
                         <button onclick="selectDuration('120分鐘', this)" class="dur-btn py-2.5 rounded-xl border border-[#EDEAE4] text-xs transition-all cursor-pointer hover:border-[var(--color-rose-gold)]">120分</button>
                     </div>
-                    <div id="hint-msg-dur" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇按摩時長</div>
+                    <div id="hint-msg-dur" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇按摩時長</div>
                 </div>
             </div>
 
             <div class="mb-6 pt-4">
                 <label id="step2-label" class="block text-xs font-bold text-[#8A7E73] mb-4 uppercase tracking-widest">02 / 選擇日期</label>
                 <div id="date-container" class="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-[240px] overflow-y-auto pr-1 pb-1 opacity-50 pointer-events-none transition-all"></div>
-                <div id="hint-date" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 點選上方的預約日期</div>
+                <div id="hint-date" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 點選上方的預約日期</div>
             </div>
 
             <div>
@@ -181,7 +186,7 @@
                     </div>
                 </div>
                 <div id="time-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[260px] overflow-y-auto pr-1"></div>
-                <div id="hint-time" class="hidden text-center text-xs mt-4 py-2 px-5 font-bold tracking-wider text-white bg-gradient-to-r from-[#C5A898] to-[#B39686] rounded-full shadow-md animate-bounce mx-auto w-fit">↑ 選擇預約時段</div>
+                <div id="hint-time" class="hidden text-center text-sm mt-4 py-2.5 px-6 font-bold tracking-wider text-white bg-gradient-to-r from-[#8C6D5E] to-[#6E5346] border border-[#F2E6DF]/50 rounded-full shadow-md drop-shadow-xs animate-bounce mx-auto w-fit">↑ 選擇預約時段</div>
             </div>
 
             <div id="confirm-preview-container" class="hidden mt-6 mb-2">
@@ -207,6 +212,7 @@
             <button id="submit-btn" onclick="submitReservation()" class="w-full bg-[#C5A898] hover:bg-[#B39686] text-white py-4 rounded-2xl font-bold transition-all shadow-xs cursor-pointer active:scale-95">確認預約</button>
         </div>
 
+        <!-- 區塊 B：查詢與取消 -->
         <div id="query-section" class="hidden space-y-6">
             <div class="bg-[#FDFCF9] rounded-2xl p-5 border border-[#EDEAE4] space-y-3">
                 <p class="text-xs font-bold text-[#8A7E73] mb-1 tracking-widest uppercase">請輸入您預約時留下的資料</p>
@@ -220,7 +226,8 @@
             </div>
         </div>
 
-<div id="prices-section" class="hidden space-y-4">
+        <!-- 區塊 C：價目表 -->
+        <div id="prices-section" class="hidden space-y-4">
             <div class="grid grid-cols-3 gap-1.5 bg-[#F9F6F0] p-1.5 rounded-2xl border border-[#EDEAE4]">
                 <button onclick="switchPriceTab('nail', this)" id="price-btn-nail" class="price-tab-btn py-2 text-xs font-bold rounded-xl bg-white shadow-xs text-[#4A3E3D] transition-all cursor-pointer">美甲價目表</button>
                 <button onclick="switchPriceTab('eyelash', this)" id="price-btn-eyelash" class="price-tab-btn py-2 text-xs font-medium rounded-xl text-[#8A7E73] transition-all cursor-pointer">美睫價目表</button>
@@ -253,14 +260,15 @@
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
+
+    <!-- 頁尾 -->
     <footer class="w-full max-w-md mx-auto mt-4 mb-4 text-center text-xs text-[#8A7E73] space-y-2.5 px-1">
         <p class="font-serif font-bold text-[#4A3E3D] tracking-wider">曼妮美學 ． Manny Aesthetics</p>
         
         <div class="space-y-0.5">
             <p class="font-medium">營業時間：週一至週六 10:00 - 21:00</p>
-            <p class="text-[11px] text-[#bf9077] font-bold tracking-wide">（週日僅提供按摩預約，美甲與美睫週日公休）</p>
+            <p class="text-[11px] text-[#bf9077] font-bold tracking-wide">（週日僅提供按摩與美甲綾綾預約，美睫與美甲兔兔週日公休）</p>
         </div>
         
         <div class="space-y-0.5 pt-0.5">
@@ -384,7 +392,9 @@
             else if (!selectedDate) { document.getElementById('hint-date').classList.remove('hidden'); } 
             else if (!selectedTime) {
                 let isConflict = false;
-                if ((selectedService === '美甲 💅🏻' || selectedService === '美睫 👁️') && selectedDate) {
+                // 判斷是否為週日公休項目（美睫，或是美甲且非綾綾）
+                const isSundayClosed = (selectedService === '美睫 👁️') || (selectedService === '美甲 💅🏻' && selectedNailDesigner !== '綾綾');
+                if (isSundayClosed && selectedDate) {
                     const selD = new Date(selectedDate);
                     if (selD.getDay() === 0) isConflict = true;
                 }
@@ -408,7 +418,7 @@
                 if (selD.getDay() === 0) { 
                     selectedDate = ''; selectedDateText = ''; 
                     document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected-btn')); 
-                    const msg = isNail ? '💅🏻 美甲服務週日公休，已為您重置日期，請重新選擇！' : '👁️ 美睫服務週日公休，已為您重置日期，請重新選擇！';
+                    const msg = isNail ? '💅🏻 請先選擇美甲指定師（僅綾綾週日有營業）！' : '👁️ 美睫服務週日公休，已為您重置日期，請重新選擇！';
                     showToast(msg); 
                 } 
             }
@@ -417,7 +427,26 @@
             renderTimeGrid(); updateConfirmPreview(); updateHints(); 
         };
 
-        window.selectNailDesigner = function(designer, btn) { selectedNailDesigner = designer; selectedTime = ''; document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); document.getElementById('lingling-sub-container').classList.toggle('hidden', designer !== '綾綾'); document.getElementById('tutu-sub-container').classList.toggle('hidden', designer !== '兔兔'); selectedNailPart = ''; document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
+        window.selectNailDesigner = function(designer, btn) { 
+            selectedNailDesigner = designer; selectedTime = ''; 
+            document.querySelectorAll('.nail-designer-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); 
+            document.getElementById('lingling-sub-container').classList.toggle('hidden', designer !== '綾綾'); 
+            document.getElementById('tutu-sub-container').classList.toggle('hidden', designer !== '兔兔'); 
+            selectedNailPart = ''; document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); 
+
+            // 若選擇兔兔且原本已選中週日，自動重置日期
+            if (designer === '兔兔' && selectedDate) {
+                const selD = new Date(selectedDate);
+                if (selD.getDay() === 0) {
+                    selectedDate = ''; selectedDateText = '';
+                    document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected-btn'));
+                    showToast('💅🏻 指定師兔兔週日公休，已為您重置日期！');
+                }
+            }
+            updateDateButtonsAvailability();
+            renderTimeGrid(); updateConfirmPreview(); updateHints(); 
+        };
+
         window.selectNailPart = function(part, btn) { selectedNailPart = part; selectedTime = ''; document.querySelectorAll('.nail-part-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
         window.selectEyelashType = function(type, btn) { selectedEyelashType = type; selectedTime = ''; document.querySelectorAll('.eyelash-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
         window.selectMassageType = function(type, btn) { selectedMassageType = type; selectedTime = ''; document.querySelectorAll('.msg-type-btn').forEach(b => b.classList.remove('selected-btn')); btn.classList.add('selected-btn'); renderTimeGrid(); updateConfirmPreview(); updateHints(); };
@@ -454,10 +483,11 @@
             const isNail = (selectedService === '美甲 💅🏻');
             const isEyelashForTimeGrid = (selectedService === '美睫 👁️');
             
-            if (isNail || isEyelashForTimeGrid) {
+            // 僅兔兔美甲與美睫週日公休，綾綾美甲開放預約
+            if ((isNail && selectedNailDesigner !== '綾綾') || isEyelashForTimeGrid) {
                 const selD = new Date(dateStr);
                 if (selD.getDay() === 0) { 
-                    const msg = isNail ? '💅🏻 美甲服務週日公休，請選擇其他日期' : '👁️ 美睫服務週日公休，請選擇其他日期';
+                    const msg = isNail ? '💅🏻 美甲指定師兔兔週日公休，請選擇其他日期或改選綾綾' : '👁️ 美睫服務週日公休，請選擇其他日期';
                     timeGrid.innerHTML = `<div class="col-span-3 text-center text-xs py-4 text-red-400">${msg}</div>`; 
                     updateHints(); return; 
                 }
@@ -657,11 +687,12 @@
         };
 
         window.updateDateButtonsAvailability = function() {
-            const isNail = (selectedService === '美甲 💅🏻');
+            // 僅兔兔美甲或尚未選擇設計師，以及美睫，在週日反灰鎖定；選擇綾綾時週日開放預約
+            const isNailTutuOrUnselected = (selectedService === '美甲 💅🏻' && selectedNailDesigner !== '綾綾');
             const isEyelash = (selectedService === '美睫 👁️');
             document.querySelectorAll('.date-btn').forEach(btn => {
                 const dow = parseInt(btn.dataset.dow, 10);
-                if ((isNail || isEyelash) && dow === 0) { btn.classList.add('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.classList.remove('selected-btn'); btn.disabled = true; }
+                if ((isNailTutuOrUnselected || isEyelash) && dow === 0) { btn.classList.add('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.classList.remove('selected-btn'); btn.disabled = true; }
                 else { btn.classList.remove('opacity-30', 'cursor-not-allowed', 'pointer-events-none'); btn.disabled = false; if (selectedDate === btn.dataset.date) btn.classList.add('selected-btn'); }
             });
         };
